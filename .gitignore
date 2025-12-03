@@ -1,0 +1,43 @@
+# ------------------------
+# Global ignores
+# ------------------------
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+logs/
+*.tmp
+*.swp
+
+# ------------------------
+# Environment files
+# ------------------------
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ------------------------
+# Backend specific
+# ------------------------
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/coverage/
+
+# ------------------------
+# Frontend specific
+# ------------------------
+frontend/node_modules/
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/coverage/
+
+# ------------------------
+# Misc
+# ------------------------
+# Ignore editor/IDE configs if you don’t want them in repo
+.vscode/
+.idea/
