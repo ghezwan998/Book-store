@@ -13,6 +13,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
       lowercase: true,
+      uniqe: true,
       trim: true,
     },
     password: {
@@ -30,17 +31,14 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const hashpassword = await bcrypt.hash(this.password, 10);
-    this.password = hashpassword;
-    next();
-  } catch (error) {
-    next(error);
-  }
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+  this.password = bcrypt.hash(this.password, 10);
 });
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 

@@ -17,6 +17,9 @@ app.use(express.json());
 app.use("/api/user", userRoutes)
 app.use("/api/book", bookRouter);
 
+app.get("/", ()=>{
+  console.log("Hello world")
+})
 const startServer = async () => {
   try {
     await connectDB(); 
