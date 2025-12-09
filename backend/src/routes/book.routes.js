@@ -7,8 +7,8 @@ router.get('/all-books', getAllBooks)
 
 router.post('/add-book', addBook);
 
-router.post('edit-book/:id', editBook);
+router.put('/edit-book/:id', editBook);
 
-router.post('/delete-book/:id', deleteBook);
+router.delete('/delete-book/:id', deleteBook);
 
 export default router;
