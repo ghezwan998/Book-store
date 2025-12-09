@@ -1,5 +1,18 @@
 import Book from "../models/book.js";
 
+const getBook = async (req, res) => {
+  const bookId = req.params.id;
+
+  try {
+    const book = await Book.findById(bookId);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+    res.status(200).json({ book });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find({});
@@ -30,7 +43,7 @@ const editBook = async (req, res) => {
   const bookId = req.params.id;
 
   try {
-    const book = await Book.findByIdAndUpdate( bookId, { ...req.body });
+    const book = await Book.findByIdAndUpdate(bookId, { ...req.body });
     if (!book) return res.status(404).json({ message: "Book not found" });
     res.status(200).json({ book, message: "Book updated successfuly" });
   } catch (err) {
@@ -51,4 +64,4 @@ const deleteBook = async (req, res) => {
   }
 };
 
-export { getAllBooks, addBook, editBook, deleteBook };
+export { getBook, getAllBooks, addBook, editBook, deleteBook };
