@@ -3,6 +3,7 @@ import connectDB from "./config/db/db.js";
 import userRoutes from "./routes/user.routes.js";
 import bookRouter from "./routes/book.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import cors from "cors";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -13,6 +14,10 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 
 // Routes
 app.use("/api/auth", userRoutes)
