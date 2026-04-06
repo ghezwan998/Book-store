@@ -1,7 +1,7 @@
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
@@ -9,34 +9,41 @@ const register = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const existUser = await User.findOne({ email });
-    if (existUser) {
-      return res.status(409).json({ error: "This email already exist" });
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
     }
 
+    // Create new user
     const user = new User({
-      username: username,
-      email: email,
-      password: password,
+      username,
+      email: email.toLowerCase(),
+      password,
     });
 
     await user.save();
 
-    return res.status(201).json({
-      message: "User created successfully",
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
 
-const login = async (req, res) => {
+// Login user
+export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -44,14 +51,14 @@ const login = async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
     const token = jwt.sign(
@@ -60,17 +67,13 @@ const login = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    return res.status(200).json({
+    res.status(200).json({
       message: "Login successful",
       token,
-      user: { id: user._id, email: user.email, role: user.role },
+      user: { id: user._id, username: user.username, email: user.email, role: user.role },
     });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 };
-
-const logout = (req, res) => {};
-
-export { register, login, logout };

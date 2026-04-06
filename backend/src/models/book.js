@@ -4,7 +4,7 @@ const bookSchema = new Schema ({
     title: {
         type: String,
         required: true,
-        uniqe: true
+        unique: true
     },
     author: {
         type: String,
@@ -17,7 +17,17 @@ const bookSchema = new Schema ({
     category: {
         type: String,
         default: null
+    },
+    price: {
+        type: Number,
+        default: null,
+        required: true
+    },
+    stock: {
+        type: Number,
+        default: 0
     }
+
 });
 
 const Book = mongoose.model('Book', bookSchema);

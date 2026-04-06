@@ -2,6 +2,7 @@ import express from "express";
 import connectDB from "./config/db/db.js";
 import userRoutes from "./routes/user.routes.js";
 import bookRouter from "./routes/book.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -14,8 +15,9 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 // Routes
-app.use("/api/user", userRoutes)
+app.use("/api/auth", userRoutes)
 app.use("/api/book", bookRouter);
+app.use("/api/order", orderRoutes);
 
 app.get("/", ()=>{
   console.log("Hello world")

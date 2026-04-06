@@ -5,35 +5,35 @@ const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: true,
-      min: 5,
+      required: [true, "Username is required"],
+      minlength: 5,
       trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       lowercase: true,
-      uniqe: true,
+      unique: true,
       trim: true,
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "Password is required"],
+      minlength: 8,
     },
-    role:{
-        type: String,
-        enum: ['user', 'admin'],
-        default: 'user',
-    }
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  this.password = bcrypt.hash(this.password, 10);
+
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

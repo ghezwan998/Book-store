@@ -24,18 +24,42 @@ const getAllBooks = async (req, res) => {
 };
 
 const addBook = async (req, res) => {
-  const { title, author, publishDate, category } = req.body;
+  const { title, author, publishDate, category, price, stock } = req.body;
 
   try {
-    if (!title || !author)
-      return res.status(400).json({ message: "Title and author required" });
+    // Check if book already exists (by title)
+    const existingBook = await Book.findOne({ title });
 
-    const book = await Book.create({ title, author, publishDate, category });
+    if (existingBook) {
+      existingBook.stock += stock || 0;
 
-    res.status(201).json({ message: "This Book Added Successfuly" }, book);
+      await existingBook.save();
+
+      return res.status(200).json({
+        message: "Book already exists, stock updated",
+        book: existingBook
+      });
+    }
+
+    const newBook = new Book({
+      title,
+      author,
+      publishDate,
+      category,
+      price,
+      stock: stock || 0
+    });
+
+    await newBook.save();
+
+    res.status(201).json({
+      message: "Book created successfully",
+      book: newBook
+    });
+
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Cannot add book" });
   }
 };
 
